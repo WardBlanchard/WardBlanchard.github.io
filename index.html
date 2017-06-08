@@ -105,12 +105,12 @@
           var target = event.target;
           var resultId = domAttr.get(target, "data-result-id");
 
-          // get the graphic corresponding to the clicked zip code
+          // get the graphic corresponding to the clicked site
           var result = resultId && graphics && graphics[parseInt(resultId,
             10)];
 
           if (result) {
-            // open the popup at the centroid of zip code polygon
+            // open the popup at the centroid of site polygon
             // and set the popup's features which will populate popup content and title.
             view.popup.open({
               features: [result],
