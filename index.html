@@ -31,14 +31,14 @@
       ) {
 
         var map = new Map({
-          basemap: "dark-gray"
+          basemap: "satellite"
         });
 
         var view = new MapView({
           container: "sceneDiv",
           map: map,
-          center: [-4.4, 50.7],
-          zoom: 11,
+          center: [-2.633, 50.789],
+          zoom: 15,
           padding: {
             right: 300
           }
@@ -52,21 +52,22 @@
 
         // Create the PopupTemplate
         var popupTemplate = {
-          title: "{SSSI_NAME}",
-          content: "<p>{DESCRIPTION}</p>",
-          actions:[{
-          	id: "find-site",
-          	text: "\ue619",
-          	title: "Site information"
-          }]
+          title: "Kingcombe",
+          content: "<p>{Area_Name}</p>",
+          // actions:[{
+//           	id: "find-site",
+//           	text: "\ue619",
+//           	title: "Site information"
+//           }]
         };
 
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
-          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Cornwall%20-%20Sites%20of%20Special%20Scientific%20Interest%20Map%20Notes%20(Areas)/FeatureServer",
+          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/My_area_layer/FeatureServer",
           outFields: ["*"],
           popupTemplate: popupTemplate
         });
+        debugger
         map.add(featureLayer);
 
         var graphics;
@@ -84,7 +85,7 @@
 
                 results.forEach(function(result, index) {
                   var attributes = result.attributes;
-                  var name = attributes.SSSI_NAME 
+                  var name = attributes.Area_Name 
 
                   // Create a list SSSIs in Cornwall
                   domConstruct.create("li", {
@@ -105,12 +106,12 @@
           var target = event.target;
           var resultId = domAttr.get(target, "data-result-id");
 
-          // get the graphic corresponding to the clicked site
+          // get the graphic corresponding to the clicked zip code
           var result = resultId && graphics && graphics[parseInt(resultId,
             10)];
 
           if (result) {
-            // open the popup at the centroid of site polygon
+            // open the popup at the centroid of zip code polygon
             // and set the popup's features which will populate popup content and title.
             view.popup.open({
               features: [result],
@@ -205,7 +206,7 @@
 <body>
   <div class="panel-container">
     <div class="panel-side">
-      <h2>SSSIs in Cornwall</h2>
+      <h2>Kingcombe Farm Fields</h2>
       <ul id="cornwall_SSSI">
         <li>Loading&hellip;</li>
       </ul>
