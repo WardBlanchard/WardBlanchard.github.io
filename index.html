@@ -13,7 +13,7 @@
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-
+		"esri/widgets/BasemapToggle",
         "dijit/a11yclick",
 
         "dojo/on",
@@ -25,25 +25,30 @@
       function(
         Map, MapView,
         FeatureLayer,
+        BasemapToggle,
         a11yclick,
         on,
         dom, domAttr, domConstruct
       ) {
 
         var map = new Map({
-          basemap: "satellite"
+          basemap: "dark-gray"
         });
 
         var view = new MapView({
           container: "sceneDiv",
           map: map,
-          center: [-2.633, 50.789],
-          zoom: 15,
+          center: [-4.4, 50.7],
+          zoom: 10,
           padding: {
             right: 300
           }
         });
-
+		var toggle = new BasemapToggle({
+  			view: view,
+  			nextBasemap: "osm"
+  		});
+  	view.ui.add(toggle, "top-left");
         var listNode = dom.byId("cornwall_SSSI");
 
         /********************
@@ -52,23 +57,42 @@
 
         // Create the PopupTemplate
         var popupTemplate = {
-          title: "Kingcombe",
-          content: "<p>{Area_Name}</p>",
-          // actions:[{
-//           	id: "find-site",
-//           	text: "\ue619",
-//           	title: "Site information"
-//           }]
+          title: "{SSSI_NAME}",
+          content: "<p>{DESCRIPTION}</p>",
+          actions:[{
+          	id: "find-site",
+          	text: "\ue619",
+          	title: "Site information"
+          }]
         };
-
+		var popupTemplatePath = {
+          title: "{Name}",
+          content: "<p>The southwest coast path runs 660 miles from Minehead to Poole</p>",
+          actions:[{
+          	id: "find-site",
+          	text: "\ue619",
+          	title: "Site information"
+          }]
+        };
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
-          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/My_area_layer/FeatureServer",
+          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Cornwall%20-%20Sites%20of%20Special%20Scientific%20Interest%20Map%20Notes%20(Areas)/FeatureServer",
+          opacity: 0.7,
           outFields: ["*"],
           popupTemplate: popupTemplate
         });
-        debugger
+        
+        //another feature layer
+        var swPathLyr = new FeatureLayer({
+      url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Merge%20Map%20Notes%20(Lines)%20National%20Trails/FeatureServer",
+	  id: "swpath",
+	  opacity: 0.7,
+	  outFields: ["*"],
+      popupTemplate: popupTemplatePath,
+	  title: "The southwest coast path National Trail 660 miles",
+    });
         map.add(featureLayer);
+        map.add(swPathLyr);
 
         var graphics;
 
@@ -85,7 +109,7 @@
 
                 results.forEach(function(result, index) {
                   var attributes = result.attributes;
-                  var name = attributes.Area_Name 
+                  var name = attributes.SSSI_NAME 
 
                   // Create a list SSSIs in Cornwall
                   domConstruct.create("li", {
@@ -206,7 +230,7 @@
 <body>
   <div class="panel-container">
     <div class="panel-side">
-      <h2>Kingcombe Farm Fields</h2>
+      <h2>SSSIs in Cornwall</h2>
       <ul id="cornwall_SSSI">
         <li>Loading&hellip;</li>
       </ul>
