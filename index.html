@@ -13,7 +13,7 @@
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-		"esri/widgets/BasemapToggle",
+
         "dijit/a11yclick",
 
         "dojo/on",
@@ -25,31 +25,26 @@
       function(
         Map, MapView,
         FeatureLayer,
-        BasemapToggle,
         a11yclick,
         on,
         dom, domAttr, domConstruct
       ) {
 
         var map = new Map({
-          basemap: "dark-gray"
+          basemap: "satellite"
         });
 
         var view = new MapView({
           container: "sceneDiv",
           map: map,
-          center: [-4.4, 50.7],
-          zoom: 10,
+          center: [-2.633, 50.789],
+          zoom: 15,
           padding: {
             right: 300
           }
         });
-		var toggle = new BasemapToggle({
-  			view: view,
-  			nextBasemap: "osm"
-  		});
-  	view.ui.add(toggle, "top-left");
-        var listNode = dom.byId("cornwall_SSSI");
+
+        var listNode = dom.byId("DWT_coast");
 
         /********************
          * Add feature layer
@@ -57,42 +52,22 @@
 
         // Create the PopupTemplate
         var popupTemplate = {
-          title: "{SSSI_NAME}",
-          content: "<p>{DESCRIPTION}</p>",
+          title: "{Area_Name}",
+          content: "<p>These are the wildlife trust reserves located along the south coast.</p>",
           actions:[{
           	id: "find-site",
           	text: "\ue619",
           	title: "Site information"
           }]
         };
-		var popupTemplatePath = {
-          title: "{Name}",
-          content: "<p>The southwest coast path runs 660 miles from Minehead to Poole</p>",
-          actions:[{
-          	id: "find-site",
-          	text: "\ue619",
-          	title: "Site information"
-          }]
-        };
+
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
-          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Cornwall%20-%20Sites%20of%20Special%20Scientific%20Interest%20Map%20Notes%20(Areas)/FeatureServer",
-          opacity: 0.7,
+          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Wildlife_Trust_Reserves_along_the_coast/FeatureServer",
           outFields: ["*"],
           popupTemplate: popupTemplate
         });
-        
-        //another feature layer
-        var swPathLyr = new FeatureLayer({
-      url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Merge%20Map%20Notes%20(Lines)%20National%20Trails/FeatureServer",
-	  id: "swpath",
-	  opacity: 0.7,
-	  outFields: ["*"],
-      popupTemplate: popupTemplatePath,
-	  title: "The southwest coast path National Trail 660 miles",
-    });
         map.add(featureLayer);
-        map.add(swPathLyr);
 
         var graphics;
 
@@ -109,9 +84,9 @@
 
                 results.forEach(function(result, index) {
                   var attributes = result.attributes;
-                  var name = attributes.SSSI_NAME 
+                  var name = attributes.Area_Name 
 
-                  // Create a list SSSIs in Cornwall
+                  // Create a list DWT reserves
                   domConstruct.create("li", {
                     className: "panel-result",
                     tabIndex: 0,
@@ -149,7 +124,7 @@
           if (event.action.id === "find-site") {
             var attributes = popup.viewModel.selectedFeature.attributes;
             // Get the "website" field attribute
-            var info = attributes.IMAGE_URL;
+            var info = attributes.Area_Descr;
             // Make sure the "website" attribute value is not null
             if (info !== null) {
               // Open up a new browser using the URL value in the 'website' field
@@ -230,8 +205,8 @@
 <body>
   <div class="panel-container">
     <div class="panel-side">
-      <h2>SSSIs in Cornwall</h2>
-      <ul id="cornwall_SSSI">
+      <h2>Coastal wildlife trust reserves</h2>
+      <ul id="DWT_coast">
         <li>Loading&hellip;</li>
       </ul>
     </div>
