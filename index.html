@@ -15,7 +15,7 @@
         "esri/layers/FeatureLayer",
 		"esri/widgets/BasemapToggle",
         "dijit/a11yclick",
-
+		"esri/widgets/Locate",
         "dojo/on",
         "dojo/dom",
         "dojo/dom-attr",
@@ -27,6 +27,7 @@
         FeatureLayer,
         BasemapToggle,
         a11yclick,
+        Locate,
         on,
         dom, domAttr, domConstruct
       ) {
@@ -74,6 +75,18 @@
           	title: "Site information"
           }]
         };
+        
+        // add locate button
+        
+        var locateBtn = new Locate({
+        view: view
+      });
+
+      // Add the locate widget to the top left corner of the view
+      view.ui.add(locateBtn, {
+        position: "top-left"
+      });
+      
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
           url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Sites_of_Special_Scientific_Interest_SSSI_SWCP/FeatureServer",
