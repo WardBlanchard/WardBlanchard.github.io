@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Query features from a FeatureLayerView - 4.3</title>
+  <title>Dorset sites of special scientific interest(SSSIs)</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/themes/dark-green/main.css">
   <script src="https://js.arcgis.com/4.3/"></script>
-
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script>
     require([
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-
+		"esri/widgets/BasemapToggle",
         "dijit/a11yclick",
 
         "dojo/on",
@@ -25,26 +25,31 @@
       function(
         Map, MapView,
         FeatureLayer,
+        BasemapToggle,
         a11yclick,
         on,
         dom, domAttr, domConstruct
       ) {
 
         var map = new Map({
-          basemap: "satellite"
+          basemap: "hybrid"
         });
 
         var view = new MapView({
           container: "sceneDiv",
           map: map,
-          center: [-2.633, 50.789],
-          zoom: 15,
+          center: [-3.1, 50.7],
+          zoom: 12,
           padding: {
             right: 300
           }
         });
-
-        var listNode = dom.byId("DWT_coast");
+		var toggle = new BasemapToggle({
+  			view: view,
+  			nextBasemap: "osm"
+  		});
+  	view.ui.add(toggle, "top-left");
+        var listNode = dom.byId("dorset_SSSI");
 
         /********************
          * Add feature layer
@@ -52,22 +57,42 @@
 
         // Create the PopupTemplate
         var popupTemplate = {
-          title: "{Area_Name}",
-          content: "<p>These are the wildlife trust reserves located along the south coast.</p>",
+          title: "{SSSI_NAME}",
+          content: "<p>{DESCRIPTIO}</p>",
           actions:[{
           	id: "find-site",
           	text: "\ue619",
           	title: "Site information"
           }]
         };
-
+		var popupTemplatePath = {
+          title: "{Name}",
+          content: "<p>The southwest coast path runs 660 miles from Minehead to Poole</p>",
+          actions:[{
+          	id: "find-site",
+          	text: "\ue619",
+          	title: "Site information"
+          }]
+        };
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
-          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Wildlife_Trust_Reserves_along_the_coast/FeatureServer",
+          url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Sites_of_Special_Scientific_Interest_SSSI_SWCP/FeatureServer",
+          opacity: 0.7,
           outFields: ["*"],
           popupTemplate: popupTemplate
         });
+        
+        //another feature layer
+        var swPathLyr = new FeatureLayer({
+      url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Merge%20Map%20Notes%20(Lines)%20National%20Trails/FeatureServer",
+	  id: "swpath",
+	  opacity: 0.7,
+	  outFields: ["*"],
+      popupTemplate: popupTemplatePath,
+	  title: "The southwest coast path National Trail 660 miles",
+    });
         map.add(featureLayer);
+        map.add(swPathLyr);
 
         var graphics;
 
@@ -84,9 +109,9 @@
 
                 results.forEach(function(result, index) {
                   var attributes = result.attributes;
-                  var name = attributes.Area_Name 
+                  var name = attributes.SSSI_NAME 
 
-                  // Create a list DWT reserves
+                  // Create a list SSSIs in Dorset
                   domConstruct.create("li", {
                     className: "panel-result",
                     tabIndex: 0,
@@ -95,11 +120,37 @@
                   }, fragment);
                 });
                 domConstruct.place(fragment, listNode, "only");
+              sortList("dorset_SSSI");
+            shortList();
               });
             }
           });
         });
+ // sort the cornwall_SSSI list alphabetically   
+    function sortList(ul) {
+  	var ul = document.getElementById(ul);
 
+  	Array.from(ul.getElementsByTagName("LI"))
+    .sort((a, b) => a.textContent.localeCompare(b.textContent))
+    .forEach(li => ul.appendChild(li));
+}
+	// remove duplicates 
+	  // create an array from the unordered list
+	  function shortList(ul) {
+	  	var listItemContents = [];
+
+		$("li").each(function() {
+	    var text = $(this).text();
+    
+    	if (listItemContents.indexOf(text) === -1) {
+	      listItemContents.push(text);
+    		}
+	    else {
+	      $(this).remove();
+	    	}
+		});
+	}
+	
         // listen to click event on the zip code list
         on(listNode, on.selector("li", a11yclick), function(event) {
           var target = event.target;
@@ -124,7 +175,7 @@
           if (event.action.id === "find-site") {
             var attributes = popup.viewModel.selectedFeature.attributes;
             // Get the "website" field attribute
-            var info = attributes.Area_Descr;
+            var info = attributes.IMAGE_LINK;
             // Make sure the "website" attribute value is not null
             if (info !== null) {
               // Open up a new browser using the URL value in the 'website' field
@@ -195,7 +246,7 @@
     
     .panel-result:hover,
     .panel-result:focus {
-      color: orange;
+      color: green;
       background-color: rgba(0, 0, 0, 0.75);
     }
   </style>
@@ -205,8 +256,8 @@
 <body>
   <div class="panel-container">
     <div class="panel-side">
-      <h2>Coastal wildlife trust reserves</h2>
-      <ul id="DWT_coast">
+      <h2>SSSIs in S Dorset and E Devon</h2>
+      <ul id="dorset_SSSI">
         <li>Loading&hellip;</li>
       </ul>
     </div>
