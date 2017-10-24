@@ -35,7 +35,7 @@
       ) {
 
         var map = new Map({
-          basemap: "hybrid"
+          basemap: "dark-gray"
         });
 
         var view = new MapView({
@@ -49,7 +49,7 @@
         });
 		var toggle = new BasemapToggle({
   			view: view,
-  			nextBasemap: "osm"
+  			nextBasemap: "hybrid"
   		});
   	view.ui.add(toggle, "top-left");
         var listNode = dom.byId("dorset_SSSI");
