@@ -13,9 +13,9 @@
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-		"esri/widgets/BasemapToggle",
+	"esri/widgets/BasemapToggle",
         "dijit/a11yclick",
-		"esri/widgets/Locate",
+	"esri/widgets/Locate",
         "dojo/on",
         "dojo/dom",
         "dojo/dom-attr",
@@ -98,14 +98,14 @@
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
           url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Sites_of_Special_Scientific_Interest_SSSI_SWCP/FeatureServer",
-          opacity: 0.5,
+          opacity: 0.7,
           outFields: ["*"],
           popupTemplate: popupTemplate
         });
         
         //another feature layer
         var swPathLyr = new FeatureLayer({
-      url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Merge%20Map%20Notes%20(Lines)%20National%20Trails/FeatureServer",
+      url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/footpath/FeatureServer",
 	  id: "swpath",
 	  opacity: 0.7,
 	  outFields: ["*"],
