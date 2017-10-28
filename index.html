@@ -35,21 +35,21 @@
       ) {
 
         var map = new Map({
-          basemap: "dark-gray"
+          basemap: "hybrid"
         });
 
         var view = new MapView({
           container: "sceneDiv",
           map: map,
           center: [-3.1, 50.7],
-          zoom: 12,
+          zoom: 14,
           padding: {
             right: 300
           }
         });
 		var toggle = new BasemapToggle({
   			view: view,
-  			nextBasemap: "hybrid"
+  			nextBasemap: "osm"
   		});
   	view.ui.add(toggle, "top-left");
         var listNode = dom.byId("dorset_SSSI");
@@ -98,7 +98,7 @@
         // Create the FeatureLayer using the popupTemplate
         var featureLayer = new FeatureLayer({
           url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/Sites_of_Special_Scientific_Interest_SSSI_SWCP/FeatureServer",
-          opacity: 0.7,
+          opacity: 0.3,
           outFields: ["*"],
           popupTemplate: popupTemplate
         });
