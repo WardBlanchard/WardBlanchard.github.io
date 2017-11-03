@@ -13,9 +13,9 @@
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
-	"esri/widgets/BasemapToggle",
+		"esri/widgets/BasemapToggle",
         "dijit/a11yclick",
-	"esri/widgets/Locate",
+		"esri/widgets/Locate",
         "dojo/on",
         "dojo/dom",
         "dojo/dom-attr",
@@ -42,7 +42,7 @@
           container: "sceneDiv",
           map: map,
           center: [-3.1, 50.7],
-          zoom: 14,
+          zoom: 15,
           padding: {
             right: 300
           }
@@ -52,7 +52,7 @@
   			nextBasemap: "osm"
   		});
   	view.ui.add(toggle, "top-left");
-        var listNode = dom.byId("dorset_SSSI");
+        var listNode = dom.byId("PathSection");
        
        $(function() {
     $( "#button" ).click(function() {
@@ -75,8 +75,8 @@
           }]
         };
 		var popupTemplatePath = {
-          title: "{Stretch}",
-          content: "{Notes}<br>{More_notes} km.<br><br><p>The southwest coast path runs 660 miles from Minehead to Poole</p>",
+          title: "{PathSection}",
+          content: "<p><br>{NOTES}<br>{More_notes} kilometres.<br>The southwest coast path runs 1,060 kilometres from Minehead to Poole.</p>",
           actions:[{
           	id: "find-site",
           	text: "\ue619",
@@ -107,7 +107,7 @@
         var swPathLyr = new FeatureLayer({
       url: "http://services6.arcgis.com/MlFyonGCf404aQCB/arcgis/rest/services/footpath/FeatureServer",
 	  id: "swpath",
-	  opacity: 0.7,
+	  opacity: 1,
 	  outFields: ["*"],
       popupTemplate: popupTemplatePath,
 	  title: "The southwest coast path National Trail 660 miles",
@@ -117,7 +117,7 @@
 
         var graphics;
 
-        view.whenLayerView(featureLayer).then(function(lyrView) {
+        view.whenLayerView(swPathLyr).then(function(lyrView) {
           lyrView.watch("updating", function(val) {
             if (!val) { // wait for the layer view to finish updating
 
@@ -130,9 +130,9 @@
 
                 results.forEach(function(result, index) {
                   var attributes = result.attributes;
-                  var name = attributes.SSSI_NAME 
+                  var name = attributes.PathSection; 
 
-                  // Create a list SSSIs in Dorset
+                  // Create a list walks in Dorset
                   domConstruct.create("li", {
                     className: "panel-result",
                     tabIndex: 0,
@@ -141,7 +141,7 @@
                   }, fragment);
                 });
                 domConstruct.place(fragment, listNode, "only");
-              sortList("dorset_SSSI");
+              sortList("PathSection");
             shortList();
               });
             }
@@ -186,7 +186,7 @@
             // and set the popup's features which will populate popup content and title.
             view.popup.open({
               features: [result],
-              location: result.geometry.centroid
+              location: result.geometry.extent.center
             });
           }
         });
@@ -298,14 +298,14 @@
   <div class="panel-container">
     <div class="panel-side">
 
-      <h2>SSSIs in S Dorset and E Devon</h2>
-      <ul id="dorset_SSSI">
+      <h2>Coastal walks in S Dorset and E Devon</h2>
+      <ul id="PathSection">
         <li>Loading&hellip;</li>
       </ul> 
 
     </div>      
 
-	<a id="button" href="#">Show/Hide SSSI list</a>
+	<a id="button" href="#">Show/Hide walk list</a>
     <div id="sceneDiv">
 
     </div>
